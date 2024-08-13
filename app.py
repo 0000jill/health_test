@@ -343,7 +343,7 @@ def handle_text_message(event):
     elif text == 'id':
         line_bot_api.reply_message(event.reply_token, TextSendMessage(event.source.user_id))
     #新功能
-    elif text == "定時提醒":
+    #elif text == "定時提醒":
         
         # # 準備要轉發的資料
         # payload = {
@@ -373,7 +373,6 @@ def handle_text_message(event):
         #     line_bot_api.reply_message(event.reply_token, TextSendMessage(text="已將定時提醒請求轉發到平台"))
         # else:
         #     line_bot_api.reply_message(event.reply_token, TextSendMessage(text="定時提醒請求轉發失敗"))
-
     elif text =="身體健康狀況諮詢":
         line_bot_api.reply_message(event.reply_token, [
             TextSendMessage(text='請輸入您的身體狀況')
