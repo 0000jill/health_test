@@ -43,7 +43,7 @@ import time, statistics
 import BubbleMsg
 import ImagemapMsg
 import CarouselMsg
-from LineInitializer import (channel_secret, channel_access_token, line_bot_api, handler, cai_webhook_url)
+from LineInitializer import (channel_secret, channel_access_token, line_bot_api, handler)
 from components.EatAdviceMessage import (EatAdviceMessage, EatAdvice)
 from models.User import User
 import config
@@ -367,12 +367,12 @@ def handle_text_message(event):
         # }
 
         # 轉發請求
-        response = requests.post(cai_webhook_url)
+        # response = requests.post(cai_webhook_url)
         
-        if response.status_code == 200:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="已將定時提醒請求轉發到平台"))
-        else:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="定時提醒請求轉發失敗"))
+        # if response.status_code == 200:
+        #     line_bot_api.reply_message(event.reply_token, TextSendMessage(text="已將定時提醒請求轉發到平台"))
+        # else:
+        #     line_bot_api.reply_message(event.reply_token, TextSendMessage(text="定時提醒請求轉發失敗"))
 
     elif text =="身體健康狀況諮詢":
         line_bot_api.reply_message(event.reply_token, [
