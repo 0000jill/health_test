@@ -385,17 +385,15 @@ def handle_text_message(event):
             response = requests.post(host_url, headers=headers, json=body)
             
             # 解析回應
-            if response.status_code == 200:
-                response_data = response.json()  # 解析回應的 JSON 數據
-                status = response_data.get("status")
-                message = response_data.get("message")
-                
-                if status == 200:
-                    reply_message = f"定時提醒已設定成功！\nStatus: {status}\nMessage: {message}"
-                else:
-                    reply_message = f"設定失敗。\nStatus: {status}\nMessage: {message}"
+            response_data = response.json()  # 解析回應的 JSON 數據
+            status = response_data.get("status")
+            message = response_data.get("message")
+            
+            # 根據 status 判斷回覆訊息
+            if status == 200:
+                reply_message = f"定時提醒已設定成功！\nStatus: {status}\nMessage: {message}"
             else:
-                reply_message = f"設定失敗，請稍後再試。\nHTTP Status Code: {response.status_code}"
+                reply_message = f"設定失敗。\nStatus: {status}\nMessage: {message}"
             
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_message))
         
