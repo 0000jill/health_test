@@ -385,17 +385,23 @@ def handle_text_message(event):
         try:
             response = requests.post(host_url, headers=headers, json=body)
             
-            # 解析回應
-            response_data = response.json()  # 解析回應的 JSON 數據
-            status = response_data.get("status")
-            message = response_data.get("message")
-                
-            reply_message = f"Status: {status}\nMessage: {message}"
+            # 檢查回應的內容
+            if response.content:  # 確保回應不為空
+                try:
+                    response_data = response.json()  # 解析回應的 JSON 數據
+                    status = response_data.get("status")
+                    message = response_data.get("message")
+                    
+                    reply_message = f"Status: {status}\nMessage: {message}"
+                except ValueError:
+                    reply_message = f"回應非 JSON 格式:\n{response.text}"
+            else:
+                reply_message = "回應內容為空，無法解析。"
+            
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_message))
         
         except Exception as e:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"發生錯誤：{str(e)}"))
-
     elif text =="身體健康狀況諮詢":
         line_bot_api.reply_message(event.reply_token, [
             TextSendMessage(text='請輸入您的身體狀況')
