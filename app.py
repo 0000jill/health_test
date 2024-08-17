@@ -347,7 +347,7 @@ def handle_text_message(event):
         # 設定 URL 和標頭
         host_url = "https://cai-innoserve.gss.com.tw/eta/api/subscription/{linebot_test}/event/multicast"
         headers = {
-            "x-gss-event-subscription-key": "{eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6ImxpbmVib3RfdGVzdCIsIkJvdElkIjoibGluZWJvdF90ZXN0In0.4QeWZawifQb5DLh6Bj3ERnpI_eotPo3xubgeQi8ICl0}",
+            "x-gss-event-subscription-key": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6ImxpbmVib3RfdGVzdCIsIkJvdElkIjoibGluZWJvdF90ZXN0In0.4QeWZawifQb5DLh6Bj3ERnpI_eotPo3xubgeQi8ICl0",
             "x-gss-event-from": "",
             "content-type": "application/json"
         }
