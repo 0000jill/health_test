@@ -344,35 +344,52 @@ def handle_text_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(event.source.user_id))
     #新功能
     elif text == "定時提醒":
+        # 設定 URL 和標頭
+        host_url = "https://{https://cai-innoserve.gss.com.tw/botbuilder/#/bots/27/flows?page=1&perPage=20&sort[0].field=type&sort[0].dir=asc&sort[1].field=name&sort[1].dir=asc}/eta/api/subscription/{linebot_test}/event/multicast"
+        headers = {
+            "x-gss-event-subscription-key": "{eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6ImxpbmVib3RfdGVzdCIsIkJvdElkIjoibGluZWJvdF90ZXN0In0.4QeWZawifQb5DLh6Bj3ERnpI_eotPo3xubgeQi8ICl0}",
+            "x-gss-event-from": "{linebot_test}",
+            "content-type": "application/json"
+        }
         
-        # # 準備要轉發的資料
-        # payload = {
-        #     "triggerId": "{#ETA_BOT_SUB_ID#}",
-        #     "Conversations": [{
-        #         "Id": event.source.user_id,  # 使用 LINE 使用者 ID 作為 Conversation ID
-        #         "RecipientId": event.source.user_id,
-        #         "RecipientName": profile.display_name,
-        #         "Subject": "定時提醒",
-        #         "IsGroup": False
-        #     }],
-        #     "Event": {
-        #         "Name": "定時提醒",
-        #         "Text": "這是一個定時提醒的請求",
-        #         "Value": {
-        #             "Data": []
-        #         },
-        #         "Attachments": []
-        #     },
-        #     "Message": None
-        # }
+        # 設定 body
+        body = {
+            "TriggerId": "gssbot",
+            "Conversations": [
+                {
+                    "Id": "",  # 根據發佈頻道填寫
+                    "RecipientId": "User1", 
+                    "ChannelList": {
+                        "InclusionChannels": "iota"
+                    },
+                    "Subject": "", 
+                    "IsGroup": False
+                },
+                {
+                    "Id": "",  # 根據發佈頻道填寫
+                    "RecipientId": "User2", 
+                    "Subject": "", 
+                    "IsGroup": False
+                }
+            ],
+            "Event": {
+                "Name": "approval",   # 事件識別碼
+                "Value": {  # 要給bot的data
+                }
+            },
+            "Message": None
+        }
+        
+        # 發送 POST 請求
+        try:
+            response = requests.post(host_url, headers=headers, json=body)
+            if response.status_code == 200:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="success"))
+            else:
+                line_bot_api.reply_message(event.reply_token, TextSendMessage(text="fail"))
+        except Exception as e:
+            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"發生錯誤：{str(e)}"))
 
-        # 轉發請求
-        response = requests.post('https://cai-innoserve.gss.com.tw/productionLDL/line/linebot_test')
-        
-        if response.status_code == 200:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="已將定時提醒請求轉發到平台"))
-        else:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text="定時提醒請求轉發失敗"))
     elif text =="身體健康狀況諮詢":
         line_bot_api.reply_message(event.reply_token, [
             TextSendMessage(text='請輸入您的身體狀況')
