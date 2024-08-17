@@ -375,6 +375,7 @@ def handle_text_message(event):
             "Event": {
                 "Name": "approval",   # 事件識別碼
                 "Value": {  # 要給bot的data
+                    "FormID": "0001"
                 }
             },
             "Message": None
