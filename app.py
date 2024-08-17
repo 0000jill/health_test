@@ -374,8 +374,8 @@ def handle_text_message(event):
             ],
             "Event": {
                 "Name": "approval",   # 事件識別碼
-                # "Value": {  # 要給bot的data
-                # }
+                "Value": {  # 要給bot的data
+                }
             },
             "Message": None
         }
@@ -388,13 +388,8 @@ def handle_text_message(event):
             response_data = response.json()  # 解析回應的 JSON 數據
             status = response_data.get("status")
             message = response_data.get("message")
-            
-            # 根據 status 判斷回覆訊息
-            if status == 200:
-                reply_message = f"定時提醒已設定成功！\nStatus: {status}\nMessage: {message}"
-            else:
-                reply_message = f"設定失敗。\nStatus: {status}\nMessage: {message}"
-            
+                
+            reply_message = f"Status: {status}\nMessage: {message}"
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_message))
         
         except Exception as e:
