@@ -344,64 +344,83 @@ def handle_text_message(event):
         line_bot_api.reply_message(event.reply_token, TextSendMessage(event.source.user_id))
     #新功能
     elif text == "定時提醒":
-        # 設定 URL 和標頭
-        host_url = "https://cai-innoserve.gss.com.tw/eta/api/subscription/linebot_test/event/multicast"
-        headers = {
-            "x-gss-event-subscription-key": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6ImxpbmVib3RfdGVzdCIsIkJvdElkIjoibGluZWJvdF90ZXN0In0.4QeWZawifQb5DLh6Bj3ERnpI_eotPo3xubgeQi8ICl0",
-            "x-gss-event-from": "",
-            "content-type": "application/json"
-        }
+        buttons_template = ButtonsTemplate(
+            title='選擇時間',
+            text='請選擇一個時間',
+            actions=[
+                DatetimePickerAction(
+                    label="選擇時間",
+                    data="action=select_time",
+                    mode="time"
+                )
+            ]
+        )
+    
+        template_message = TemplateSendMessage(
+            alt_text='選擇時間的模板訊息',
+            template=buttons_template
+        )
+    
+        line_bot_api.reply_message(event.reply_token, template_message)
+
+        # # 設定 URL 和標頭
+        # host_url = "https://cai-innoserve.gss.com.tw/eta/api/subscription/linebot_test/event/multicast"
+        # headers = {
+        #     "x-gss-event-subscription-key": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6ImxpbmVib3RfdGVzdCIsIkJvdElkIjoibGluZWJvdF90ZXN0In0.4QeWZawifQb5DLh6Bj3ERnpI_eotPo3xubgeQi8ICl0",
+        #     "x-gss-event-from": "",
+        #     "content-type": "application/json"
+        # }
         
-        # 設定 body
-        body = {
-            "TriggerId": "gssbot",
-            "Conversations": [
-                {
-                    "Id": "",  # 根據發佈頻道填寫
-                    "RecipientId": "User1", 
-                    "ChannelList": {
-                        "InclusionChannels": "iota"
-                    },
-                    "Subject": "", 
-                    "IsGroup": False
-                },
-                {
-                    "Id": "",  # 根據發佈頻道填寫
-                    "RecipientId": "User2", 
-                    "Subject": "", 
-                    "IsGroup": False
-                }
-            ],
-            "Event": {
-                "Name": "approval",   # 事件識別碼
-                "Value": {  # 要給bot的data
-                    "FormID": "0001"
-                }
-            },
-            "Message": None
-        }
+        # # 設定 body
+        # body = {
+        #     "TriggerId": "gssbot",
+        #     "Conversations": [
+        #         {
+        #             "Id": "",  # 根據發佈頻道填寫
+        #             "RecipientId": "User1", 
+        #             "ChannelList": {
+        #                 "InclusionChannels": "iota"
+        #             },
+        #             "Subject": "", 
+        #             "IsGroup": False
+        #         },
+        #         {
+        #             "Id": "",  # 根據發佈頻道填寫
+        #             "RecipientId": "User2", 
+        #             "Subject": "", 
+        #             "IsGroup": False
+        #         }
+        #     ],
+        #     "Event": {
+        #         "Name": "approval",   # 事件識別碼
+        #         "Value": {  # 要給bot的data
+        #             "FormID": "0001"
+        #         }
+        #     },
+        #     "Message": None
+        # }
         
-        # 發送 POST 請求
-        try:
-            response = requests.post(host_url, headers=headers, json=body)
+        # # 發送 POST 請求
+        # try:
+        #     response = requests.post(host_url, headers=headers, json=body)
             
-            # 檢查回應的內容
-            if response.content:  # 確保回應不為空
-                try:
-                    response_data = response.json()  # 解析回應的 JSON 數據
-                    status = response_data.get("status")
-                    message = response_data.get("message")
+        #     # 檢查回應的內容
+        #     if response.content:  # 確保回應不為空
+        #         try:
+        #             response_data = response.json()  # 解析回應的 JSON 數據
+        #             status = response_data.get("status")
+        #             message = response_data.get("message")
                     
-                    reply_message = f"Status: {status}\nMessage: {message}"
-                except ValueError:
-                    reply_message = f"回應非 JSON 格式:\n{response.text}"
-            else:
-                reply_message = "回應內容為空，無法解析。"
+        #             reply_message = f"Status: {status}\nMessage: {message}"
+        #         except ValueError:
+        #             reply_message = f"回應非 JSON 格式:\n{response.text}"
+        #     else:
+        #         reply_message = "回應內容為空，無法解析。"
             
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_message))
+        #     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_message))
         
-        except Exception as e:
-            line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"發生錯誤：{str(e)}"))
+        # except Exception as e:
+        #     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"發生錯誤：{str(e)}"))
     elif text =="身體健康狀況諮詢":
         line_bot_api.reply_message(event.reply_token, [
             TextSendMessage(text='請輸入您的身體狀況')
