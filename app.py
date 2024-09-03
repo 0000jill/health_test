@@ -318,6 +318,21 @@ def handle_text_message(event):
         with tempfile.NamedTemporaryFile(dir='/opt/render/project/src/static/tmp',delete=False) :
             print("h4")
 '''
+
+# 吃藥定時器
+medication_picker = DatetimePickerAction(
+    label="選擇吃藥時間",
+    data="action=medication_time",
+    mode="time"
+)
+
+# 量血壓定時器
+bp_picker = DatetimePickerAction(
+    label="選擇量血壓時間",
+    data="action=bp_time",
+    mode="time"
+)
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     text = event.message.text
@@ -345,82 +360,16 @@ def handle_text_message(event):
     #新功能
     elif text == "定時提醒":
         buttons_template = ButtonsTemplate(
-            title='選擇時間',
-            text='請選擇一個時間',
-            actions=[
-                DatetimePickerAction(
-                    label="選擇時間",
-                    data="action=select_time",
-                    mode="time"
-                )
-            ]
+            title='定時提醒設定',
+            text='請選擇提醒的事件',
+            actions=[medication_picker, bp_picker]
         )
-    
         template_message = TemplateSendMessage(
             alt_text='選擇時間的模板訊息',
             template=buttons_template
         )
-    
         line_bot_api.reply_message(event.reply_token, template_message)
 
-        # # 設定 URL 和標頭
-        # host_url = "https://cai-innoserve.gss.com.tw/eta/api/subscription/linebot_test/event/multicast"
-        # headers = {
-        #     "x-gss-event-subscription-key": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJJZCI6ImxpbmVib3RfdGVzdCIsIkJvdElkIjoibGluZWJvdF90ZXN0In0.4QeWZawifQb5DLh6Bj3ERnpI_eotPo3xubgeQi8ICl0",
-        #     "x-gss-event-from": "",
-        #     "content-type": "application/json"
-        # }
-        
-        # # 設定 body
-        # body = {
-        #     "TriggerId": "gssbot",
-        #     "Conversations": [
-        #         {
-        #             "Id": "",  # 根據發佈頻道填寫
-        #             "RecipientId": "User1", 
-        #             "ChannelList": {
-        #                 "InclusionChannels": "iota"
-        #             },
-        #             "Subject": "", 
-        #             "IsGroup": False
-        #         },
-        #         {
-        #             "Id": "",  # 根據發佈頻道填寫
-        #             "RecipientId": "User2", 
-        #             "Subject": "", 
-        #             "IsGroup": False
-        #         }
-        #     ],
-        #     "Event": {
-        #         "Name": "approval",   # 事件識別碼
-        #         "Value": {  # 要給bot的data
-        #             "FormID": "0001"
-        #         }
-        #     },
-        #     "Message": None
-        # }
-        
-        # # 發送 POST 請求
-        # try:
-        #     response = requests.post(host_url, headers=headers, json=body)
-            
-        #     # 檢查回應的內容
-        #     if response.content:  # 確保回應不為空
-        #         try:
-        #             response_data = response.json()  # 解析回應的 JSON 數據
-        #             status = response_data.get("status")
-        #             message = response_data.get("message")
-                    
-        #             reply_message = f"Status: {status}\nMessage: {message}"
-        #         except ValueError:
-        #             reply_message = f"回應非 JSON 格式:\n{response.text}"
-        #     else:
-        #         reply_message = "回應內容為空，無法解析。"
-            
-        #     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_message))
-        
-        # except Exception as e:
-        #     line_bot_api.reply_message(event.reply_token, TextSendMessage(text=f"發生錯誤：{str(e)}"))
     elif text =="身體健康狀況諮詢":
         line_bot_api.reply_message(event.reply_token, [
             TextSendMessage(text='請輸入您的身體狀況')
@@ -1512,6 +1461,16 @@ def handle_leave():
     app.logger.info("Got leave event")
 
 
+# 把User輸的時間處理成整點
+def process_time(time_str):
+    time_obj = datetime.strptime(time_str, '%H:%M')
+    # 根據分鐘數決定時間是否要進位
+    if time_obj.minute >= 30:
+        time_obj = time_obj.replace(minute=0, second=0) + timedelta(hours=1)
+    else:
+        time_obj = time_obj.replace(minute=0, second=0)
+    return time_obj.strftime('%H:%M')
+
 @handler.add(PostbackEvent)
 def handle_postback(event):
     global lang, status, imagePath, disease, tmpData
@@ -1526,7 +1485,50 @@ def handle_postback(event):
 
     if postbackRouter.route(event):
         return
+    elif event.postback.data == 'action=medication_time': # 新增吃藥提醒時間
+        time_str = event.postback.params.get('time', None)
+        if time_str:
+            processed_time = process_time(time_str)
+            # 儲存到資料庫 TODO
+            data = {
+                'insertReminder' : 'm',
+                'userID' : event.source.user_id,
+                'ReminderTime' : processed_time
+            }
+            # response = requests.post(config.PHP_SERVER+'mhealth/Reminder/insertReminder.php', data = data)
+            # resultList = json.loads(response.text)
+            # 根據 resultList 準備回應訊息
+            # if resultList.get('status') == 'success':
+            #     reply_text = f"已成功設定 {processed_time} 為吃藥時間。"
+            # else:
+            #     reply_text = f"操作失敗: {resultList.get('message', '請求處理失敗。')}"
+            reply_text = f"你選擇的吃藥時間是 {processed_time}。"
+        else:
+            reply_text = "你沒有選擇吃藥時間。"
 
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
+    elif postback_data == 'action=bp_time': # 新增量血壓提醒時間
+        time_str = event.postback.params.get('time', None)
+        if time_str:
+            processed_time = process_time(time_str)
+            # 儲存到資料庫 TODO
+            data = {
+                'insertReminder' : 'bp',
+                'userID' : event.source.user_id,
+                'ReminderTime' : processed_time
+            }
+            # response = requests.post(config.PHP_SERVER+'mhealth/Reminder/insertReminder.php', data = data)
+            # resultList = json.loads(response.text)
+            # 根據 resultList 準備回應訊息
+            # if resultList.get('status') == 'success':
+            #     reply_text = f"已成功設定 {processed_time} 為量血壓時間。"
+            # else:
+            #     reply_text = f"操作失敗: {resultList.get('message', '請求處理失敗。')}"
+            reply_text = f"你選擇的量血壓時間是 {processed_time}。"
+        else:
+            reply_text = "你沒有選擇量血壓時間。"
+
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     elif event.postback.data == '/breakfast': #早餐查詢
         param = {
             'queryRecord': 'queryRecord',
