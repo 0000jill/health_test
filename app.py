@@ -1507,7 +1507,7 @@ def handle_postback(event):
             reply_text = "你沒有選擇吃藥時間。"
 
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
-    elif postback_data == 'action=bp_time': # 新增量血壓提醒時間
+    elif event.postback.data == 'action=bp_time': # 新增量血壓提醒時間
         time_str = event.postback.params.get('time', None)
         if time_str:
             processed_time = process_time(time_str)
