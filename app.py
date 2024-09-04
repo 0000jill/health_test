@@ -36,7 +36,7 @@ import json
 import operator
 from argparse import ArgumentParser
 import datetime as dt
-from datetime import datetime
+from datetime import datetime, timedelta
 import googletrans
 import csv
 import time, statistics
