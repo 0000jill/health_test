@@ -357,8 +357,7 @@ def handle_text_message(event):
         line_bot_api.reply_message(event.reply_token, ImagemapMsg.newRecord(event))
     elif text == 'id':
         line_bot_api.reply_message(event.reply_token, TextSendMessage(event.source.user_id))
-    #新功能
-    elif text == "定時提醒":
+    elif text == "定時提醒":  # 定時提醒
         buttons_template = ButtonsTemplate(
             title='定時提醒設定',
             text='請選擇提醒的事件',
@@ -1495,14 +1494,14 @@ def handle_postback(event):
                 'userID' : event.source.user_id,
                 'ReminderTime' : processed_time
             }
-            # response = requests.post(config.PHP_SERVER+'mhealth/Reminder/insertReminder.php', data = data)
-            # resultList = json.loads(response.text)
-            # 根據 resultList 準備回應訊息
-            # if resultList.get('status') == 'success':
-            #     reply_text = f"已成功設定 {processed_time} 為吃藥時間。"
-            # else:
-            #     reply_text = f"操作失敗: {resultList.get('message', '請求處理失敗。')}"
-            reply_text = f"你選擇的吃藥時間是 {processed_time}。"
+            response = requests.post(config.PHP_SERVER+'mhealth/Reminder/insertReminder.php', data = data)
+            resultList = json.loads(response.text)
+            #根據 resultList 準備回應訊息
+            if resultList.get('status') == 'success':
+                reply_text = f"已成功設定 {processed_time} 為吃藥時間。"
+            else:
+                reply_text = f"操作失敗: {resultList.get('message', '請求處理失敗。')}"
+            #reply_text = f"你選擇的吃藥時間是 {processed_time}。"
         else:
             reply_text = "你沒有選擇吃藥時間。"
 
@@ -1517,14 +1516,14 @@ def handle_postback(event):
                 'userID' : event.source.user_id,
                 'ReminderTime' : processed_time
             }
-            # response = requests.post(config.PHP_SERVER+'mhealth/Reminder/insertReminder.php', data = data)
-            # resultList = json.loads(response.text)
-            # 根據 resultList 準備回應訊息
-            # if resultList.get('status') == 'success':
-            #     reply_text = f"已成功設定 {processed_time} 為量血壓時間。"
-            # else:
-            #     reply_text = f"操作失敗: {resultList.get('message', '請求處理失敗。')}"
-            reply_text = f"你選擇的量血壓時間是 {processed_time}。"
+            response = requests.post(config.PHP_SERVER+'mhealth/Reminder/insertReminder.php', data = data)
+            resultList = json.loads(response.text)
+            #根據 resultList 準備回應訊息
+            if resultList.get('status') == 'success':
+                reply_text = f"已成功設定 {processed_time} 為量血壓時間。"
+            else:
+                reply_text = f"操作失敗: {resultList.get('message', '請求處理失敗。')}"
+            #reply_text = f"你選擇的量血壓時間是 {processed_time}。"
         else:
             reply_text = "你沒有選擇量血壓時間。"
 
