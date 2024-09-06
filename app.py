@@ -1460,14 +1460,23 @@ def handle_leave():
     app.logger.info("Got leave event")
 
 
-# 把User輸的時間處理成整點
+# 處理User輸的時間
 def process_time(time_str):
     time_obj = datetime.strptime(time_str, '%H:%M')
-    # 根據分鐘數決定時間是否要進位
-    if time_obj.minute >= 30:
+    minutes = time_obj.minute
+    
+    # 檢查分鐘的個位數，如果大於等於 5，就將分鐘的十位數加 1
+    if minutes % 10 >= 5:
+        minutes = (minutes // 10 + 1) * 10
+    else:
+        minutes = (minutes // 10) * 10
+    
+    # 如果分鐘等於 60，進位到下一小時
+    if minutes == 60:
         time_obj = time_obj.replace(minute=0, second=0) + timedelta(hours=1)
     else:
-        time_obj = time_obj.replace(minute=0, second=0)
+        time_obj = time_obj.replace(minute=minutes, second=0)
+    
     return time_obj.strftime('%H:%M')
 
 @handler.add(PostbackEvent)
