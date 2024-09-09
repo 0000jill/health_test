@@ -127,8 +127,8 @@ exerciseC = ['強度緩和運動', '強度中等運動', '強度劇烈運動']
 exerciseE = ['Light exercise', 'Moderate exercise', 'Drastic exercise']
 exercise = [exerciseC, exerciseE]
 #the text of setting
-setC = ['語言', '更改個人資訊', '關於智慧e聊健康']
-setE = ['Language', 'Basic information', 'Specific diseases', 'About Health Chat']
+setC = ['語言', '更改個人資訊', '關於智慧e聊健康', '定時提醒']
+setE = ['Language', 'Basic information', 'Specific diseases', 'About Health Chat', 'Reminder']
 sett = [setC, setE]
 #the text of habit
 dA = 'A. 大部分時間都坐著'
@@ -319,20 +319,6 @@ def handle_text_message(event):
             print("h4")
 '''
 
-# 吃藥定時器
-medication_picker = DatetimePickerAction(
-    label="選擇吃藥時間",
-    data="action=medication_time",
-    mode="time"
-)
-
-# 量血壓定時器
-bp_picker = DatetimePickerAction(
-    label="選擇量血壓時間",
-    data="action=bp_time",
-    mode="time"
-)
-
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
     text = event.message.text
@@ -357,18 +343,6 @@ def handle_text_message(event):
         line_bot_api.reply_message(event.reply_token, ImagemapMsg.newRecord(event))
     elif text == 'id':
         line_bot_api.reply_message(event.reply_token, TextSendMessage(event.source.user_id))
-    elif text == "定時提醒":  # 定時提醒
-        buttons_template = ButtonsTemplate(
-            title='定時提醒設定',
-            text='請選擇提醒的事件',
-            actions=[medication_picker, bp_picker]
-        )
-        template_message = TemplateSendMessage(
-            alt_text='選擇時間的模板訊息',
-            template=buttons_template
-        )
-        line_bot_api.reply_message(event.reply_token, template_message)
-
     elif text =="身體健康狀況諮詢":
         line_bot_api.reply_message(event.reply_token, [
             TextSendMessage(text='請輸入您的身體狀況')
@@ -462,7 +436,8 @@ def handle_text_message(event):
         buttons_template = ButtonsTemplate(title='設定', text='settings', actions=[
             PostbackAction(label=sett[lang][0], data='/language'),
             PostbackAction(label=sett[lang][1], data='/info'),
-            PostbackAction(label=sett[lang][2], data='/about')
+            PostbackAction(label=sett[lang][2], data='/about'),
+            PostbackAction(label=sett[lang][3], data='/reminder')
         ])
         template_message = TemplateSendMessage(alt_text='Buttons alt text', template=buttons_template)
         line_bot_api.reply_message(event.reply_token, template_message)
@@ -1479,6 +1454,20 @@ def process_time(time_str):
     
     return time_obj.strftime('%H:%M')
 
+# 吃藥定時器
+medication_picker = DatetimePickerAction(
+    label="選擇吃藥時間",
+    data="action=medication_time",
+    mode="time"
+)
+
+# 量血壓定時器
+bp_picker = DatetimePickerAction(
+    label="選擇量血壓時間",
+    data="action=bp_time",
+    mode="time"
+)
+
 @handler.add(PostbackEvent)
 def handle_postback(event):
     global lang, status, imagePath, disease, tmpData
@@ -1493,6 +1482,17 @@ def handle_postback(event):
 
     if postbackRouter.route(event):
         return
+    elif event.postback.data == '/reminder': # 定時提醒
+        buttons_template = ButtonsTemplate(
+            title='定時提醒設定',
+            text='請選擇提醒的事件',
+            actions=[medication_picker, bp_picker]
+        )
+        template_message = TemplateSendMessage(
+            alt_text='選擇時間的模板訊息',
+            template=buttons_template
+        )
+        line_bot_api.reply_message(event.reply_token, template_message)
     elif event.postback.data == 'action=medication_time': # 新增吃藥提醒時間
         time_str = event.postback.params.get('time', None)
         if time_str:
