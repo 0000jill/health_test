@@ -840,6 +840,7 @@ def handle_text_message(event):
                 line_bot_api.reply_message(event.reply_token, template_message)
             else:
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text='格式錯誤，請重新輸入'))
+            print("在選擇日期時 status = "+status)
         #新功能
         elif status == 20:    
             
