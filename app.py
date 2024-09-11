@@ -1485,7 +1485,7 @@ def handle_postback(event):
             response = requests.post(config.PHP_SERVER+'mhealth/Reminder/insertReminder.php', data = data)
             resultList = json.loads(response.text)
             if resultList.get('status') == 'success':
-                reply_text = f"已成功設定 {processed_time} 為吃藥時間。"
+                reply_text = f"已成功設定 {time_str} 為吃藥時間。"
             else:
                 reply_text = f"操作失敗: {resultList.get('message', '請求處理失敗。')}"
         else:
@@ -1503,7 +1503,7 @@ def handle_postback(event):
             response = requests.post(config.PHP_SERVER+'mhealth/Reminder/insertReminder.php', data = data)
             resultList = json.loads(response.text)
             if resultList.get('status') == 'success':
-                reply_text = f"已成功設定 {processed_time} 為量血壓時間。"
+                reply_text = f"已成功設定 {time_str} 為量血壓時間。"
             else:
                 reply_text = f"操作失敗: {resultList.get('message', '請求處理失敗。')}"
         else:
