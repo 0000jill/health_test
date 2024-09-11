@@ -503,6 +503,8 @@ def handle_text_message(event):
             TextSendMessage(text='若取消請輸入N')
         ])
         status = 2
+        print("現在status為")
+        print(status)
     elif text == '新增飲水':
         line_bot_api.reply_message(event.reply_token, [
             TextSendMessage(text='請輸入飲水量(ml)\nex: 100'),
