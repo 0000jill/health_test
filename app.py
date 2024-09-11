@@ -822,6 +822,7 @@ def handle_text_message(event):
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='已取消'))
     else:
         if status == 2: # blood pressure
+            print("status = 2")
             if not len(text.split('/')) == 3:
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text='格式錯誤，請重新輸入'))
             sbp = text.split('/')[0] # systolic
