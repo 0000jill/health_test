@@ -503,7 +503,7 @@ def handle_text_message(event):
             TextSendMessage(text='若取消請輸入N')
         ])
         status = 2
-        print("現在status為")
+        print("text == 新增血壓，現在status為")
         print(status)
     elif text == '新增飲水':
         line_bot_api.reply_message(event.reply_token, [
@@ -824,7 +824,7 @@ def handle_text_message(event):
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='已取消'))
     else:
         if status == 2: # blood pressure
-            print("status = 2")
+            print("status = 2的if迴圈")
             if not len(text.split('/')) == 3:
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text='格式錯誤，請重新輸入'))
             sbp = text.split('/')[0] # systolic
@@ -1303,7 +1303,7 @@ def handle_content_message(event):
         print('liff compose:'+imageLiffURI)
 
         # Image path inside Heroku server
-        imageUrl='https://test-mwmy.onrender.com/'+os.path.join('static', 'tmp', dist_name)
+        imageUrl='https://zero731test-mhealth.onrender.com/'+os.path.join('static', 'tmp', dist_name)
         print('imageURL (heroku): ', imageUrl)
         concept_request = service_pb2.PostModelOutputsRequest(
             # This is the model ID of a publicly available Food model.
