@@ -1453,6 +1453,20 @@ bp_picker = DatetimePickerAction(
     mode="time"
 )
 
+# 量血糖定時器
+bs_picker = DatetimePickerAction(
+    label="選擇量血壓時間",
+    data="action=bs_time",
+    mode="time"
+)
+
+# 注射胰島素定時器
+insulin_picker = DatetimePickerAction(
+    label="選擇注射胰島素時間",
+    data="action=insulin_time",
+    mode="time"
+)
+
 @handler.add(PostbackEvent)
 def handle_postback(event):
     global lang, status, imagePath, disease, tmpData
@@ -1471,7 +1485,7 @@ def handle_postback(event):
         buttons_template = ButtonsTemplate(
             title='定時提醒設定',
             text='請選擇提醒的事件',
-            actions=[medication_picker, bp_picker]
+            actions=[medication_picker, bp_picker, bs_picker, insulin_picker]
         )
         template_message = TemplateSendMessage(
             alt_text='選擇時間的模板訊息',
@@ -1512,6 +1526,14 @@ def handle_postback(event):
                 reply_text = f"操作失敗: {resultList.get('message', '請求處理失敗。')}"
         else:
             reply_text = "你沒有選擇量血壓時間。"
+
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
+    elif (event.postback.data == 'action=bs_time' or event.postback.data == 'action=insulin_time'): # 新增量血糖/注射胰島素提醒時間
+        time_str = event.postback.params.get('time', None)
+        if time_str:
+            reply_text = f"已成功設定 {time_str} 為量血糖/注射胰島素時間。"
+        else:
+            reply_text = "你沒有選擇量血糖/注射胰島素時間。"
 
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
     elif event.postback.data == '/breakfast': #早餐查詢
