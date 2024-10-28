@@ -503,8 +503,6 @@ def handle_text_message(event):
             TextSendMessage(text='若取消請輸入N')
         ])
         status = 2
-        print("text == 新增血壓，現在status為")
-        print(status)
     elif text == '新增飲水':
         line_bot_api.reply_message(event.reply_token, [
             TextSendMessage(text='請輸入飲水量(ml)\nex: 100'),
@@ -823,8 +821,8 @@ def handle_text_message(event):
             status = 0
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='已取消'))
     else:
+        print(f"#text-elseloop, status = {status}")
         if status == 2: # blood pressure
-            print("status = 2的if迴圈")
             if not len(text.split('/')) == 3:
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text='格式錯誤，請重新輸入'))
             sbp = text.split('/')[0] # systolic
@@ -840,7 +838,6 @@ def handle_text_message(event):
                 line_bot_api.reply_message(event.reply_token, template_message)
             else:
                 line_bot_api.reply_message(event.reply_token, TextSendMessage(text='格式錯誤，請重新輸入'))
-            print("在選擇日期時 status = "+status)
         #新功能
         elif status == 20:    
             
@@ -1841,7 +1838,7 @@ def handle_postback(event):
 
 
     else:
-        print("postback status:",status)
+        print(f"#postback-elseloop, status = {status}")
         if status == 0:
             line_bot_api.reply_message(event.reply_token, TextSendMessage(text='Recieved'))
         elif status == 2: # blood pressure
