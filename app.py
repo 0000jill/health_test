@@ -1455,7 +1455,7 @@ bp_picker = DatetimePickerAction(
 
 # 量血糖定時器
 bs_picker = DatetimePickerAction(
-    label="選擇量血壓時間",
+    label="選擇量血糖時間",
     data="action=bs_time",
     mode="time"
 )
